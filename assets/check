@@ -8,6 +8,7 @@ SERVER=$(jq -r '(.source.servers + [.source.server])[0]' < $SCRIPT_INPUT)
 PORT=$(jq -r '.source.port // ""' < $SCRIPT_INPUT)
 BASE_DIR=$(jq -r '.source.base_dir // ""' < $SCRIPT_INPUT)
 USER=$(jq -r '.source.user // ""' < $SCRIPT_INPUT)
+SSH_OPTS=$(jq -r '.source.ssh_opts // ""' < $SCRIPT_INPUT)
 VERSION=$(jq -r '.version.ref // ""' < $SCRIPT_INPUT)
 jq -re '.source.disable_version_path' < $SCRIPT_INPUT >/dev/null
 DISABLE_VERSION_PATH=$?
@@ -36,14 +37,14 @@ SSH_ASKPASS=/opt/resource/askpass.sh DISPLAY= ssh-add ~/.ssh/server_key  1>&2  >
 REFS=''
 if [ $DISABLE_VERSION_PATH -eq 0 ]
 then
-    if ssh -i ~/.ssh/server_key -p $PORT $USER@$SERVER test -d $BASE_DIR
+    if ssh $SSH_OPTS -i ~/.ssh/server_key -p $PORT $USER@$SERVER stat $BASE_DIR >/dev/null
     then
         DIR=${BASE_DIR##*/}
         echo $DIR 1>&2
         REFS="{ \"ref\": \"$DIR\" }"
     fi
 else
-    for DIR in `ssh -i ~/.ssh/server_key -p $PORT $USER@$SERVER ls -1t $BASE_DIR`; do
+    for DIR in `ssh $SSH_OPTS -i ~/.ssh/server_key -p $PORT $USER@$SERVER ls -t $BASE_DIR`; do
       echo $DIR 1>&2
       echo ${#REFS} 1>&2
 
