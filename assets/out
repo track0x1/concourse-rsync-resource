@@ -24,7 +24,7 @@ PORT=$(jq -r '.source.port // ""' < $SCRIPT_INPUT)
 BASE_DIR=$(jq -r '.source.base_dir // ""' < $SCRIPT_INPUT)
 USER=$(jq -r '.source.user // ""' < $SCRIPT_INPUT)
 SSH_OPTS=$(jq -r '.source.ssh_opts // ""' < $SCRIPT_INPUT)
-RSYNC_OPTS=$(jq -r '.source.rsync_opts // ""' < $SCRIPT_INPUT)
+RSYNC_OPTS=$(jq -r '.source.rsync_opts // "-av"' < $SCRIPT_INPUT)
 SYNC_DIR=$(jq -r '.params.sync_dir // ""' < $SCRIPT_INPUT)
 jq -re '.source.disable_version_path' < $SCRIPT_INPUT >/dev/null
 DISABLE_VERSION_PATH=$?
